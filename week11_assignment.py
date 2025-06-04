@@ -1,0 +1,170 @@
+"""
+Program Name: Grade Management System
+Author: Ali Zarq (Department of Computer Science)
+
+Program Description:
+This program is a Grade Management System that handles data for n students.
+Each student has scores in 3 subjects: English, C-language, and Python.
+
+Features:
+1. Inputs student ID, name, and scores from the user.
+2. Calculates total score, average score, grade, and rank for each student.
+3. Supports the following functionalities:
+   - Display all student records
+   - Insert a new student
+   - Delete a student by ID
+   - Search for a student by ID or name
+   - Sort students by total score (descending)
+   - Count number of students with average >= 80
+4. Uses Object-Oriented Programming (OOP) principles.
+5. Allows input for any number of students (not fixed).
+"""
+
+class Student:
+    def __init__(self, student_id, name, english, c_lang, python):
+        self.student_id = student_id
+        self.name = name
+        self.english = english
+        self.c_lang = c_lang
+        self.python = python
+        self.total = 0
+        self.average = 0.0
+        self.grade = ''
+        self.rank = 0
+        self.calculate_scores()
+
+    def calculate_scores(self):
+        """Calculate total, average, and grade."""
+        self.total = self.english + self.c_lang + self.python
+        self.average = self.total / 3
+        if self.average >= 90:
+            self.grade = 'A'
+        elif self.average >= 80:
+            self.grade = 'B'
+        elif self.average >= 70:
+            self.grade = 'C'
+        elif self.average >= 60:
+            self.grade = 'D'
+        else:
+            self.grade = 'F'
+
+    def __str__(self):
+        return f"{self.student_id}\t{self.name}\t{self.english}\t{self.c_lang}\t{self.python}\t{self.total}\t{self.average:.2f}\t{self.grade}\t{self.rank}"
+
+class GradeManager:
+    def __init__(self):
+        self.students = []
+
+    def input_students(self):
+        n = int(input("Enter the number of students to input: "))
+        for _ in range(n):
+            student_id = input("Student ID: ")
+            name = input("Name: ")
+            english = int(input("English Score: "))
+            c_lang = int(input("C-language Score: "))
+            python = int(input("Python Score: "))
+            student = Student(student_id, name, english, c_lang, python)
+            self.students.append(student)
+        self.calculate_ranks()
+
+    def calculate_ranks(self):
+        """Calculate ranks based on total score."""
+        self.students.sort(key=lambda x: x.total, reverse=True)
+        for idx, student in enumerate(self.students):
+            student.rank = idx + 1
+
+    def display_students(self):
+        print("\nStudent Score Report")
+        print("=" * 80)
+        print("ID\tName\tEnglish\tC_lang\tPython\tTotal\tAverage\tGrade\tRank")
+        print("-" * 80)
+        for student in self.students:
+            print(student)
+        print("=" * 80)
+
+    def insert_student(self):
+        print("\nInsert New Student:")
+        student_id = input("Student ID: ")
+        name = input("Name: ")
+        english = int(input("English Score: "))
+        c_lang = int(input("C-language Score: "))
+        python = int(input("Python Score: "))
+        new_student = Student(student_id, name, english, c_lang, python)
+        self.students.append(new_student)
+        self.calculate_ranks()
+        print("Student inserted successfully.")
+
+    def delete_student(self):
+        target_id = input("Enter Student ID to delete: ")
+        for i, student in enumerate(self.students):
+            if student.student_id == target_id:
+                del self.students[i]
+                self.calculate_ranks()
+                print("Student deleted.")
+                return
+        print("Student ID not found.")
+
+    def search_by_id(self):
+        target_id = input("Enter Student ID to search: ")
+        for student in self.students:
+            if student.student_id == target_id:
+                print("Student found:")
+                print(student)
+                return
+        print("Student not found.")
+
+    def search_by_name(self):
+        target_name = input("Enter Student Name to search: ")
+        found = False
+        for student in self.students:
+            if student.name.lower() == target_name.lower():
+                print(student)
+                found = True
+        if not found:
+            print("No student found with that name.")
+
+    def sort_by_total(self):
+        self.students.sort(key=lambda s: s.total, reverse=True)
+        print("Students sorted by total score.")
+
+    def count_above_80(self):
+        count = sum(1 for s in self.students if s.average >= 80)
+        print(f"Number of students with average >= 80: {count}")
+
+    def menu(self):
+        while True:
+            print("\n--- Grade Management Menu ---")
+            print("1. Display All Students")
+            print("2. Insert Student")
+            print("3. Delete Student")
+            print("4. Search by Student ID")
+            print("5. Search by Name")
+            print("6. Sort by Total Score")
+            print("7. Count Students with Avg >= 80")
+            print("0. Exit")
+            choice = input("Choose an option: ")
+
+            if choice == '1':
+                self.display_students()
+            elif choice == '2':
+                self.insert_student()
+            elif choice == '3':
+                self.delete_student()
+            elif choice == '4':
+                self.search_by_id()
+            elif choice == '5':
+                self.search_by_name()
+            elif choice == '6':
+                self.sort_by_total()
+            elif choice == '7':
+                self.count_above_80()
+            elif choice == '0':
+                print("Exiting program.")
+                break
+            else:
+                print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    manager = GradeManager()
+    manager.input_students()
+    manager.menu()
